@@ -1,0 +1,27 @@
+<web-app>
+    <security-constraint>
+        <web-resource-collection>
+            <url-pattern>/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>*</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <security-role>
+        <role-name>*</role-name>
+    </security-role>
+
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+
+    <login-config>
+        <auth-method>BASIC?silent=true,FORM</auth-method>
+        <realm-name>exampleApplicationDomain</realm-name>
+        <form-login-config>
+            <form-login-page>/login.html</form-login-page>
+            <form-error-page>/error.html</form-error-page>
+        </form-login-config>
+    </login-config>
+</web-app>

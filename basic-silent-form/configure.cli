@@ -1,0 +1,35 @@
+# Batch script to configure Elytron in the WildFly server
+
+# Start batching commands
+batch
+
+# Add filesystem realm called exampleFsRealm in the jboss.server.config directory
+/subsystem=elytron/filesystem-realm=exampleFsRealm:add(path=fs-realm-users,relative-to=jboss.server.config.dir)
+
+# Add user to this filesystem realm
+/subsystem=elytron/filesystem-realm=exampleFsRealm:add-identity(identity=user)
+
+# Add password to user 
+/subsystem=elytron/filesystem-realm=exampleFsRealm:set-password(clear={password="password"}, identity=user)
+
+# Add security domain
+/subsystem=elytron/security-domain=exampleFsSD:add(realms=[{realm=exampleFsRealm}],default-realm=exampleFsRealm,permission-mapper=default-permission-mapper)
+
+# Set both HTTP Basic authentication in silent mode and FORM based auth mechanism for this security domain
+/subsystem=elytron/http-authentication-factory=example-fs-http-auth:add(\
+        http-server-mechanism-factory=global,\
+        security-domain=exampleFsSD,\
+        mechanism-configurations=[\
+            {mechanism-name=BASIC?silent=true,mechanism-realm-configurations=[{realm-name=exampleApplicationDomain}]},\
+            {mechanism-name=FORM,mechanism-realm-configurations=[{realm-name=exampleApplicationDomain}]}\
+        ]\
+)
+
+# Add exampleApplicationDomain in undertow and set it to use exampleFsSD security domain created above
+/subsystem=undertow/application-security-domain=exampleApplicationDomain:add(security-domain=exampleFsSD)
+
+# Run the batch commands
+run-batch
+
+# Reload the server configuration
+reload
